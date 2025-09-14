@@ -1,0 +1,816 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Captain Tools API",
+        "description": "A service for creating test cases by integrating with various tools like Jira.",
+        "version": "0.1.0"
+    },
+    "servers": [
+        {
+            "url": "https://tool-integrations-backend-183029949515.asia-south1.run.app"
+        }
+    ],
+    "paths": {
+        "/tools/jira/status": {
+            "get": {
+                "tags": [
+                    "Jira Integration"
+                ],
+                "summary": "Get Jira User Account Connection Status",
+                "description": "Checks the connection status of the Jira user account.",
+                "operationId": "get_jira_user_account_connection_status_tools_jira_status_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/tools/jira/connect": {
+            "post": {
+                "tags": [
+                    "Jira Integration"
+                ],
+                "summary": "Connect Jira User Account To App",
+                "description": "Initiates the Jira OAuth 2.0 (3LO) authorization flow. Returns a redirect URL for the user to authorize the application.",
+                "operationId": "connect_jira_user_account_to_app_tools_jira_connect_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/tools/jira/auth/callback": {
+            "get": {
+                "tags": [
+                    "Jira Integration"
+                ],
+                "summary": "Jira Auth Callback",
+                "description": "Receives the authorization code from Jira, exchanges it for tokens, and stores them securely. Not meant to be called by users directly.",
+                "operationId": "jira_auth_callback_tools_jira_auth_callback_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tools/jira/projects/list": {
+            "get": {
+                "tags": [
+                    "Jira Integration"
+                ],
+                "summary": "Get Jira User Projects",
+                "description": "Fetches the list of Jira projects for a connected user.",
+                "operationId": "get_jira_user_projects_tools_jira_projects_list_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/projects/v1/connect": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Connect Project To Application",
+                "description": "Connects a user to a Jira project by either creating a new project entry or updating an existing one.",
+                "operationId": "connect_project_to_application_projects_v1_connect_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ConnectProjectRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/projects/v1/connected": {
+            "get": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Get Connected Projects",
+                "description": "Gets the projects that a user is connected to and has access to.",
+                "operationId": "get_connected_projects_projects_v1_connected_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ]
+            }
+        },
+        "/projects/v1/{project_id}/details": {
+            "get": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Get Project Details",
+                "description": "Gets the details of a project by project id including its lates version, tool (ex. Jira, Azure DevOps), siteId(Unique project id in the rool), siteDomain(Projects domain in the tool), etc.",
+                "operationId": "get_project_details_projects_v1__project_id__details_get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/r/{req_id}": {
+            "delete": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Mark Requirement Deleted",
+                "description": "Marks a specific requirement as deleted for a given project version.",
+                "operationId": "mark_requirement_deleted_projects_v1__project_id__v__version__r__req_id__delete",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "req_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Req Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/t/{tc_id}": {
+            "delete": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Mark Testcase Deleted",
+                "description": "Marks a specific test case as deleted for a given project version.",
+                "operationId": "mark_testcase_deleted_projects_v1__project_id__v__version__t__tc_id__delete",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "tc_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Tc Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/requirements/confirm": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Confirm Requirements And Trigger Testcase Creation",
+                "description": "Confirms the requirements for a project version and triggers the test case creation workflow.",
+                "operationId": "confirm_requirements_and_trigger_testcase_creation_projects_v1__project_id__v__version__requirements_confirm_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/testcases/confirm": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Confirm Create Testcases On Jira",
+                "description": "Confirms test cases and initiates their creation in Jira as a background task.",
+                "operationId": "confirm_create_testcases_on_jira_projects_v1__project_id__v__version__testcases_confirm_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/datasets/create": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Create Datasets For Testcases",
+                "description": "Triggers the creation of datasets for test cases by calling an external workflow.",
+                "operationId": "create_datasets_for_testcases_projects_v1__project_id__v__version__datasets_create_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/requirements/list": {
+            "get": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Get Requirements Filtered",
+                "description": "Fetches requirements for a given project version, optionally filtered by source or regulation.",
+                "operationId": "get_requirements_filtered_projects_v1__project_id__v__version__requirements_list_get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "source_filename",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "Source Filename"
+                        }
+                    },
+                    {
+                        "name": "regulation",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "Regulation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/testcases/list": {
+            "get": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Get Testcases Filtered",
+                "description": "Fetches testcases for a given project version, optionally filtered by source or regulation.",
+                "operationId": "get_testcases_filtered_projects_v1__project_id__v__version__testcases_list_get",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "requirement_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "Requirement Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "summary": "Health Check",
+                "operationId": "health_check_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Body_initiate_download_dataset_job_for_all_testcases_projects_v1_download_all_post": {
+                "properties": {
+                    "project_id": {
+                        "type": "string",
+                        "title": "Project Id"
+                    },
+                    "version": {
+                        "type": "string",
+                        "title": "Version"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "project_id",
+                    "version"
+                ],
+                "title": "Body_initiate_download_dataset_job_for_all_testcases_projects_v1_download_all_post"
+            },
+            "Body_initiate_download_dataset_job_for_one_testcase_projects_v1_download_one_post": {
+                "properties": {
+                    "project_id": {
+                        "type": "string",
+                        "title": "Project Id"
+                    },
+                    "version": {
+                        "type": "string",
+                        "title": "Version"
+                    },
+                    "testcase_id": {
+                        "type": "string",
+                        "title": "Testcase Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "project_id",
+                    "version",
+                    "testcase_id"
+                ],
+                "title": "Body_initiate_download_dataset_job_for_one_testcase_projects_v1_download_one_post"
+            },
+            "Body_upload_documentation_for_project_latest_version_projects_v1__project_id__v__version__docs_upload_post": {
+                "properties": {
+                    "files": {
+                        "items": {
+                            "type": "string",
+                            "format": "binary"
+                        },
+                        "type": "array",
+                        "title": "Files",
+                        "default": []
+                    }
+                },
+                "type": "object",
+                "title": "Body_upload_documentation_for_project_latest_version_projects_v1__project_id__v__version__docs_upload_post"
+            },
+            "ConnectProjectRequest": {
+                "properties": {
+                    "tool": {
+                        "type": "string",
+                        "title": "Tool"
+                    },
+                    "siteId": {
+                        "type": "string",
+                        "title": "Siteid"
+                    },
+                    "siteDomain": {
+                        "type": "string",
+                        "title": "Sitedomain"
+                    },
+                    "projectKey": {
+                        "type": "string",
+                        "title": "Projectkey"
+                    },
+                    "projectName": {
+                        "type": "string",
+                        "title": "Projectname"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "tool",
+                    "siteId",
+                    "siteDomain",
+                    "projectKey",
+                    "projectName"
+                ],
+                "title": "ConnectProjectRequest"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        },
+        "securitySchemes": {
+            "HTTPBearer": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}
