@@ -29,6 +29,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Session-Id"],
 )
 
 
@@ -47,7 +48,7 @@ async def new_query(
         if not uid:
             raise HTTPException(status_code=401, detail='Unauthorized')
 
-        session_id = request.headers.get('x-session-id')
+        session_id = request.headers.get('X-Session-Id')
         if not session_id:
             session_id = f'session_{uuid.uuid4()}'
 
@@ -58,11 +59,8 @@ async def new_query(
 
         chat_id = get_chat_id(uid)
         msg_id = create_message(uid, chat_id, session_id, 'user', query)
-        
-        return PlainTextResponse(
-            headers={'x-session-id': session_id},
-            content=msg_id
-        )
+
+        return PlainTextResponse(headers={'X-Session-Id': session_id}, content=msg_id)
 
     except HTTPException as e:
         raise e
@@ -84,7 +82,7 @@ async def get_response(
             raise HTTPException(status_code=401, detail='Unauthorized')
 
         # 1. Extract Authorization header and session id 
-        session_id = request.headers.get('x-session-id')       
+        session_id = request.headers.get('X-Session-Id')       
         if not session_id:
             raise HTTPException(status_code=400, detail='Missing session id')
 
@@ -116,7 +114,7 @@ async def get_response(
 
         return JSONResponse(
             content={'msg_id': msg_id, 'text': response_text},
-            headers={'x-session-id': session_id}
+            headers={'X-Session-Id': session_id}
         )
 
     except HTTPException as e:
