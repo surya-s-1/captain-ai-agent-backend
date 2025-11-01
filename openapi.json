@@ -112,7 +112,7 @@
                     "Project Actions"
                 ],
                 "summary": "Connect Project To Application",
-                "description": "Connects a user to a Jira project by either creating a new project entry or updating an existing one.",
+                "description": "Connects a user to an ALM project by either creating a new project entry or updating an existing one.",
                 "operationId": "connect_project_to_application_projects_v1_connect_post",
                 "requestBody": {
                     "content": {
@@ -181,7 +181,7 @@
                     "Project Actions"
                 ],
                 "summary": "Get Project Details",
-                "description": "Gets the details of a project by project id including its lates version, tool (ex. Jira, Azure DevOps), siteId(Unique project id in the rool), siteDomain(Projects domain in the tool), etc.",
+                "description": "Gets the details of a project by project id including its latest version, tool (ex. Jira, Azure DevOps), siteId(Unique project id in the ALM tool), siteDomain (Projects domain in the ALM tool), etc.",
                 "operationId": "get_project_details_projects_v1__project_id__details_get",
                 "security": [
                     {
@@ -349,14 +349,14 @@
                 }
             }
         },
-        "/projects/v1/{project_id}/v/{version}/requirements/confirm": {
+        "/projects/v1/{project_id}/v/{version}/requirements/explicit/confirm": {
             "post": {
                 "tags": [
                     "Project Actions"
                 ],
-                "summary": "Confirm Requirements And Trigger Testcase Creation",
-                "description": "Confirms the requirements for a project version and triggers the test case creation workflow.",
-                "operationId": "confirm_requirements_and_trigger_testcase_creation_projects_v1__project_id__v__version__requirements_confirm_post",
+                "summary": "Confirm Extracted Explicit Requirements",
+                "description": "Confirm the extracted explicit requirements and starts implicit requirements creation",
+                "operationId": "confirm_extracted_explicit_requirements_projects_v1__project_id__v__version__requirements_explicit_confirm_post",
                 "security": [
                     {
                         "HTTPBearer": []
@@ -404,14 +404,14 @@
                 }
             }
         },
-        "/projects/v1/{project_id}/v/{version}/testcases/confirm": {
+        "/projects/v1/{project_id}/v/{version}/requirements/all/confirm": {
             "post": {
                 "tags": [
                     "Project Actions"
                 ],
-                "summary": "Confirm Create Testcases On Jira",
-                "description": "Confirms test cases and initiates their creation in Jira as a background task.",
-                "operationId": "confirm_create_testcases_on_jira_projects_v1__project_id__v__version__testcases_confirm_post",
+                "summary": "Confirm All Requirements",
+                "description": "Confirms the requirements for a project version and triggers the test case creation workflow.",
+                "operationId": "confirm_all_requirements_projects_v1__project_id__v__version__requirements_all_confirm_post",
                 "security": [
                     {
                         "HTTPBearer": []
@@ -434,6 +434,390 @@
                         "schema": {
                             "type": "string",
                             "title": "Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/t/{testcase_id}/update": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Update Testcase",
+                "description": "Updates a specific test case.",
+                "operationId": "update_testcase_projects_v1__project_id__v__version__t__testcase_id__update_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "testcase_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Testcase Id"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTestCaseRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/testcases/confirm": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Confirm Testcases",
+                "description": "Confirms test cases and initiates requirements and testcases creation/updation in ALM tool as a background task.",
+                "operationId": "confirm_testcases_projects_v1__project_id__v__version__testcases_confirm_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/r/{requirement_id}/sync/one": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Sync Requirement Alm Status",
+                "description": "Syncs specified requirement ALM creation status with the app.",
+                "operationId": "sync_requirement_alm_status_projects_v1__project_id__v__version__r__requirement_id__sync_one_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "requirement_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Requirement Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/t/{testcase_id}/sync/one": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Sync Testcase Alm Status",
+                "description": "Syncs specified testcase ALM creation status with the app.",
+                "operationId": "sync_testcase_alm_status_projects_v1__project_id__v__version__t__testcase_id__sync_one_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "testcase_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Testcase Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/r/{requirement_id}/create/one": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Create Requirement On Alm Tool",
+                "description": "Creates specified requirement in ALM tool",
+                "operationId": "create_requirement_on_alm_tool_projects_v1__project_id__v__version__r__requirement_id__create_one_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "requirement_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Requirement Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/t/{testcase_id}/create/one": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Create Testcase On Alm Tool",
+                "description": "Creates specified test case in ALM tool",
+                "operationId": "create_testcase_on_alm_tool_projects_v1__project_id__v__version__t__testcase_id__create_one_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    },
+                    {
+                        "name": "testcase_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Testcase Id"
                         }
                     }
                 ],
@@ -593,7 +977,7 @@
                     "Project Actions"
                 ],
                 "summary": "Get Testcases Filtered",
-                "description": "Fetches testcases for a given project version, optionally filtered by source or regulation.",
+                "description": "Fetches testcases for a given project version and requirement ID.",
                 "operationId": "get_testcases_filtered_projects_v1__project_id__v__version__testcases_list_get",
                 "security": [
                     {
@@ -626,6 +1010,180 @@
                         "schema": {
                             "type": "string",
                             "title": "Requirement Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/createNewVersion": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Create New Version",
+                "description": "Creates a new version for a given project.",
+                "operationId": "create_new_version_projects_v1__project_id__v__version__createNewVersion_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/changeAnalysisStatus/update": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Update Requirement Change Analysis Status",
+                "description": "Updates the change analysis status of specified requirement.",
+                "operationId": "update_requirement_change_analysis_status_projects_v1__project_id__v__version__changeAnalysisStatus_update_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_update_requirement_change_analysis_status_projects_v1__project_id__v__version__changeAnalysisStatus_update_post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/v1/{project_id}/v/{version}/changeAnalysis/confirm": {
+            "post": {
+                "tags": [
+                    "Project Actions"
+                ],
+                "summary": "Confirm Explicit Requirements Change Analysis",
+                "description": "Confirm the change analysis of explicit requirements.",
+                "operationId": "confirm_explicit_requirements_change_analysis_projects_v1__project_id__v__version__changeAnalysis_confirm_post",
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Project Id"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Version"
                         }
                     }
                 ],
@@ -711,7 +1269,44 @@
                 ],
                 "title": "Body_initiate_download_dataset_job_for_one_testcase_projects_v1_download_one_post"
             },
-            "Body_upload_documentation_for_project_latest_version_projects_v1__project_id__v__version__docs_upload_post": {
+            "Body_initiate_download_dataset_job_for_uploaded_document_projects_v1_download_uploadedDocument_post": {
+                "properties": {
+                    "project_id": {
+                        "type": "string",
+                        "title": "Project Id"
+                    },
+                    "version": {
+                        "type": "string",
+                        "title": "Version"
+                    },
+                    "documentName": {
+                        "type": "string",
+                        "title": "Documentname"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "project_id",
+                    "version",
+                    "documentName"
+                ],
+                "title": "Body_initiate_download_dataset_job_for_uploaded_document_projects_v1_download_uploadedDocument_post"
+            },
+            "Body_update_requirement_change_analysis_status_projects_v1__project_id__v__version__changeAnalysisStatus_update_post": {
+                "properties": {
+                    "requirement_id": {
+                        "type": "string",
+                        "title": "Requirement Id"
+                    },
+                    "new_status": {
+                        "type": "string",
+                        "title": "New Status"
+                    }
+                },
+                "type": "object",
+                "title": "Body_update_requirement_change_analysis_status_projects_v1__project_id__v__version__changeAnalysisStatus_update_post"
+            },
+            "Body_upload_documentation_for_a_project_version_projects_v1__project_id__v__version__docs_upload_post": {
                 "properties": {
                     "files": {
                         "items": {
@@ -724,7 +1319,7 @@
                     }
                 },
                 "type": "object",
-                "title": "Body_upload_documentation_for_project_latest_version_projects_v1__project_id__v__version__docs_upload_post"
+                "title": "Body_upload_documentation_for_a_project_version_projects_v1__project_id__v__version__docs_upload_post"
             },
             "ConnectProjectRequest": {
                 "properties": {
@@ -771,6 +1366,19 @@
                 },
                 "type": "object",
                 "title": "HTTPValidationError"
+            },
+            "UpdateTestCaseRequest": {
+                "properties": {
+                    "prompt": {
+                        "type": "string",
+                        "title": "Prompt"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "prompt"
+                ],
+                "title": "UpdateTestCaseRequest"
             },
             "ValidationError": {
                 "properties": {
